@@ -1,4 +1,5 @@
 import logging
+import os
 import queue
 from pathlib import Path
 from typing import List, NamedTuple
@@ -9,9 +10,7 @@ import streamlit as st
 from streamlit_webrtc import WebRtcMode, webrtc_streamer
 from ultralytics import YOLO
 from get_stun_server import get_stun_server
-
-# Import functions from model.py
-from model import get_pt_files_from_s3, check_and_download_model
+from model import get_pt_files, check_and_download_model
 
 # Configure Streamlit page
 st.set_page_config(
@@ -28,13 +27,12 @@ logger = logging.getLogger(__name__)
 
 # Model configuration
 MODELS_DIR = ROOT / "models"
+STUN_STRING = "stun:" + str(get_stun_server())
 CLASSES = [
-    'Alligator Crack', 'Vertical Crack', 'Potholes', 
+    'Alligator Crack', 'Vertical Crack', 'Potholes',
     'Raveling', 'Shoving', 'Horizontal Crack'
 ]
-
-# STUN server setup for WebRTC
-STUN_SERVER = [{"urls": ["stun:" + get_stun_server()]}]
+STUN_SERVER = [{"urls": [STUN_STRING]}]
 
 # Function to load the selected model
 @st.cache_resource
@@ -45,11 +43,16 @@ def load_model(model_path):
 st.sidebar.header("🔧 Settings")
 st.sidebar.subheader("Model Selection")
 
-# Get available models from the GitHub repository
-available_models = get_pt_files_from_s3()
+# Get available models, trying GitHub first and falling back to S3
+available_models, source = get_pt_files()
+
+# Check if models were retrieved successfully
+if not available_models:
+    st.error("Failed to retrieve models from both GitHub and S3.")
+    st.stop()
 
 # Display a dropdown for model selection without the .pt extension
-model_options = [model.replace('.pt', '') for model in available_models]
+model_options = [os.path.basename(model).replace('.pt', '') for model in available_models]
 selected_model_name = st.sidebar.selectbox("Select a model:", model_options)
 
 # Get the selected model's full file name with .pt extension
@@ -58,10 +61,11 @@ selected_model_path = MODELS_DIR / full_model_name
 
 # Check if the selected model is downloaded
 if not selected_model_path.exists():
-    with st.spinner(f"Downloading {full_model_name}... Please wait."):
+    with st.spinner(f"Downloading {full_model_name} from {source.upper()}... Please wait."):
         # Download the selected model
-        selected_model = next(model for model in available_models if model == full_model_name)
-        check_and_download_model(selected_model)
+        selected_model = next(model for model in available_models if os.path.basename(model) == full_model_name)
+        # Pass the source to check_and_download_model
+        check_and_download_model(selected_model, source)
 
     st.sidebar.success(f"{full_model_name} downloaded successfully!")
 
