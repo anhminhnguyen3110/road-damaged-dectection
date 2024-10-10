@@ -1,0 +1,10 @@
+av
+numpy
+Pillow
+streamlit
+streamlit-webrtc==0.47.1
+torch
+ultralytics
+opencv-python-headless
+requests
+# gdown

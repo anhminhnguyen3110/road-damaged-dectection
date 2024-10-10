@@ -1,0 +1,25 @@
+# Application Configuration File
+
+[client]
+# Client-side settings
+showErrorDetails        = true          # Display detailed error messages
+toolbarMode             = "minimal"     # Toolbar display mode: 'auto', 'always', or 'hidden'
+showSidebarNavigation   = true          # Enable sidebar navigation
+
+[server]
+# Server-related settings
+maxUploadSize           = 1000          # Maximum upload size in megabytes
+
+[theme]
+# Theme customization
+base                    = "dark"        # Base theme: 'light' or 'dark'
+primaryColor            = "#F63366"     # Primary accent color
+backgroundColor         = "#1E1E1E"     # Background color
+secondaryBackgroundColor = "#31333F"    # Color for secondary background elements
+textColor               = "#FFFFFF"     # Text color
+font                    = "serif"  		# Font style
+
+[logger]
+# Logging configuration
+level                   = "info"        # Logging level: 'debug', 'info', 'warning', 'error', 'critical'
+messageFormat           = "%(asctime)s %(levelname)-7s %(name)s: %(message)s" # Format for log messages
