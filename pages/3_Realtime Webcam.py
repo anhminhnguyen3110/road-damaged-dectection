@@ -11,7 +11,7 @@ from ultralytics import YOLO
 from get_stun_server import get_stun_server
 
 # Import functions from model.py
-from model import get_pt_files_from_github, check_and_download_model
+from model import get_pt_files_from_s3, check_and_download_model
 
 # Configure Streamlit page
 st.set_page_config(
@@ -46,10 +46,10 @@ st.sidebar.header("🔧 Settings")
 st.sidebar.subheader("Model Selection")
 
 # Get available models from the GitHub repository
-available_models = get_pt_files_from_github()
+available_models = get_pt_files_from_s3()
 
 # Display a dropdown for model selection without the .pt extension
-model_options = [model['name'].replace('.pt', '') for model in available_models]
+model_options = [model.replace('.pt', '') for model in available_models]
 selected_model_name = st.sidebar.selectbox("Select a model:", model_options)
 
 # Get the selected model's full file name with .pt extension
@@ -60,7 +60,7 @@ selected_model_path = MODELS_DIR / full_model_name
 if not selected_model_path.exists():
     with st.spinner(f"Downloading {full_model_name}... Please wait."):
         # Download the selected model
-        selected_model = next(model for model in available_models if model['name'] == full_model_name)
+        selected_model = next(model for model in available_models if model == full_model_name)
         check_and_download_model(selected_model)
 
     st.sidebar.success(f"{full_model_name} downloaded successfully!")

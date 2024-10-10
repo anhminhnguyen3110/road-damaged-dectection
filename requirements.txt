@@ -7,4 +7,4 @@ torch
 ultralytics
 opencv-python-headless
 requests
-# gdown
+boto3
