@@ -24,7 +24,7 @@ def get_pt_files_from_s3(bucket_name = bucket_name, prefix=''):
         print(f"An error occurred: {e}")
         return []
 
-def download_file(bucket_name, key, local_path):
+def download_file(key, local_path):
     s3 = boto3.client('s3', config=Config(signature_version=UNSIGNED), region_name='ap-southeast-2')
     try:
         s3.download_file(bucket_name, key, local_path)
@@ -32,7 +32,7 @@ def download_file(bucket_name, key, local_path):
     except Exception as e:
         print(f"Failed to download {key}: {e}")
 
-def check_and_download_model(bucket_name, key):
+def check_and_download_model(key):
     # Create the 'models' directory if it doesn't exist
     if not os.path.exists('models'):
         os.makedirs('models')
@@ -45,7 +45,7 @@ def check_and_download_model(bucket_name, key):
         print(f"{os.path.basename(key)} already exists. Skipping download.")
     else:
         # Download the file from S3
-        download_file(bucket_name, key, local_file_path)
+        download_file(key, local_file_path)
 
 if __name__ == "__main__":
     prefix = ""  # If your files are in a subfolder, specify the prefix here
