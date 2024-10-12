@@ -121,6 +121,7 @@ image_file = st.file_uploader(
 
 def predict_damage(image: Image.Image, model, threshold: float) -> List[Detection]:
     """Run the YOLO model to detect damage in the image."""
+    image = image.convert("RGB")
     _image = np.array(image)
     original_size = _image.shape[:2]
 
